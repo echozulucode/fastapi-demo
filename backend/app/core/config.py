@@ -16,7 +16,10 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     
     # Security
-    SECRET_KEY: str = Field(..., description="Secret key for JWT signing")
+    SECRET_KEY: str = Field(
+        default="dev-secret-key-change-in-production-use-openssl-rand-hex-32",
+        description="Secret key for JWT signing"
+    )
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     
