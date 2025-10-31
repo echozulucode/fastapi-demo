@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
 import { User } from '../services/api';
+import UserModal, { UserFormData } from '../components/UserModal';
 import './AdminUsersPage.css';
 
 const AdminUsersPage: React.FC = () => {
@@ -12,7 +13,11 @@ const AdminUsersPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   useEffect(() => {
     fetchUsers();
@@ -30,6 +35,47 @@ const AdminUsersPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCreateUser = async (userData: UserFormData) => {
+    try {
+      await api.post('/api/auth/register', userData);
+      setSuccess('User created successfully!');
+      fetchUsers();
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err: any) {
+      throw err;
+    }
+  };
+
+  const handleEditUser = async (userData: UserFormData) => {
+    if (!selectedUser) return;
+
+    try {
+      await api.put(`/api/users/${selectedUser.id}`, userData);
+      setSuccess('User updated successfully!');
+      fetchUsers();
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err: any) {
+      throw err;
+    }
+  };
+
+  const openCreateModal = () => {
+    setModalMode('create');
+    setSelectedUser(null);
+    setModalOpen(true);
+  };
+
+  const openEditModal = (user: User) => {
+    setModalMode('edit');
+    setSelectedUser(user);
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+    setSelectedUser(null);
   };
 
   const toggleUserStatus = async (userId: number, currentStatus: boolean) => {
@@ -84,6 +130,12 @@ const AdminUsersPage: React.FC = () => {
         </div>
       )}
 
+      {success && (
+        <div className="success-banner">
+          {success}
+        </div>
+      )}
+
       <div className="users-controls">
         <div className="search-box">
           <input
@@ -95,9 +147,14 @@ const AdminUsersPage: React.FC = () => {
           />
         </div>
 
-        <button className="btn-primary" onClick={fetchUsers}>
-          🔄 Refresh
-        </button>
+        <div className="control-buttons">
+          <button className="btn-primary" onClick={openCreateModal}>
+            ➕ Create User
+          </button>
+          <button className="btn-secondary" onClick={fetchUsers}>
+            🔄 Refresh
+          </button>
+        </div>
       </div>
 
       {loading ? (
@@ -156,6 +213,13 @@ const AdminUsersPage: React.FC = () => {
                       <div className="action-buttons">
                         <button
                           className="btn-icon"
+                          onClick={() => openEditModal(user)}
+                          title="Edit user"
+                        >
+                          ✏️
+                        </button>
+                        <button
+                          className="btn-icon"
                           onClick={() => toggleUserStatus(user.id, user.is_active)}
                           title={user.is_active ? 'Deactivate' : 'Activate'}
                           disabled={user.id === currentUser.id}
@@ -183,6 +247,14 @@ const AdminUsersPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      <UserModal
+        isOpen={modalOpen}
+        onClose={closeModal}
+        onSave={modalMode === 'create' ? handleCreateUser : handleEditUser}
+        user={selectedUser}
+        mode={modalMode}
+      />
     </div>
   );
 };
