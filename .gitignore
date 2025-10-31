@@ -80,3 +80,4 @@ dist-ssr/
 alembic/versions/*.py
 !alembic/versions/__init__.py
 venv/
+work/
