@@ -743,9 +743,59 @@ Build a production-ready, full-stack intranet web application using FastAPI (Pyt
 
 ---
 
-## Phase 9: Advanced Features (Week 14-15)
+## Phase 9: BDD Documentation (Week 14-17)
 
-### 9.1 SSO Integration (SAML/OIDC)
+### 9.0 BDD Feature Documentation
+**Priority**: Medium-High | **Effort**: 12-16 days | **Status**: Planned
+
+**Overview**: Document all implemented features using Gherkin BDD format for living documentation and automated testing. See detailed plan in `docs/ai/plan-002-bdd-documentation.md`.
+
+**Tasks**:
+- [ ] Set up features directory structure (7 categories)
+- [ ] Create project-specific Gherkin style guide
+- [ ] Write authentication features (5 feature files, ~40 scenarios)
+- [ ] Write user management features (3 files, ~25 scenarios)
+- [ ] Write PAT features (3 files, ~20 scenarios)
+- [ ] Write items management features (2 files, ~15 scenarios)
+- [ ] Write security features (4 files, ~35 scenarios)
+- [ ] Write UI/UX features (4 files, ~25 scenarios)
+- [ ] Write system admin features (2 files, ~10 scenarios)
+- [ ] Install pytest-bdd and @cucumber/cucumber
+- [ ] Create step definition templates
+- [ ] Generate living documentation
+- [ ] Integrate BDD tests into CI/CD pipeline
+
+**Deliverables**:
+- 23 Gherkin feature files
+- 150-250 BDD scenarios covering all features
+- Step definition templates (Python + JavaScript)
+- Living documentation (HTML reports)
+- BDD test integration in CI/CD
+- Traceability matrix (features → requirements)
+
+**Categories**:
+1. Authentication & Authorization (5 files)
+2. User Management (3 files)
+3. Personal Access Tokens (3 files)
+4. Items Management (2 files)
+5. Security (4 files)
+6. UI/UX (4 files)
+7. System Administration (2 files)
+
+**Benefits**:
+- Living documentation that stays current
+- Clear behavior specifications for all features
+- Automated acceptance tests
+- Non-technical stakeholder visibility
+- Compliance and audit trail
+
+**Reference**: See `docs/ai/plan-002-bdd-documentation.md` for complete plan
+
+---
+
+## Phase 10: Advanced Features (Week 18-19)
+
+### 10.1 SSO Integration (SAML/OIDC)
 **Priority**: Low (Future) | **Effort**: 5-6 days
 
 - [ ] Research Azure AD (EntraID) SAML requirements for GCC High
@@ -761,7 +811,7 @@ Build a production-ready, full-stack intranet web application using FastAPI (Pyt
 - Azure AD integration
 - SSO configuration guide
 
-### 9.2 Advanced Admin Features
+### 10.2 Advanced Admin Features
 **Priority**: Low | **Effort**: 3-4 days
 
 - [ ] Implement audit logging (user actions)
@@ -776,7 +826,7 @@ Build a production-ready, full-stack intranet web application using FastAPI (Pyt
 - Audit logging system
 - Admin reporting features
 
-### 9.3 Performance Optimization
+### 10.3 Performance Optimization
 **Priority**: Medium | **Effort**: 3-4 days
 
 - [ ] Implement API response caching (Redis optional)
@@ -794,9 +844,9 @@ Build a production-ready, full-stack intranet web application using FastAPI (Pyt
 
 ---
 
-## Phase 10: Launch & Maintenance (Week 16+)
+## Phase 11: Launch & Maintenance (Week 20+)
 
-### 10.1 Pre-Launch Checklist
+### 11.1 Pre-Launch Checklist
 **Priority**: Critical | **Effort**: 2-3 days
 
 - [ ] Perform full security audit
@@ -816,7 +866,7 @@ Build a production-ready, full-stack intranet web application using FastAPI (Pyt
 - Complete documentation
 - Deployment runbook
 
-### 10.2 Production Deployment
+### 11.2 Production Deployment
 **Priority**: Critical | **Effort**: 1-2 days
 
 - [ ] Schedule maintenance window
@@ -832,7 +882,7 @@ Build a production-ready, full-stack intranet web application using FastAPI (Pyt
 - Deployment report
 - Launch announcement
 
-### 10.3 Post-Launch Support
+### 11.3 Post-Launch Support
 **Priority**: High | **Effort**: Ongoing
 
 - [ ] Monitor application health and errors
@@ -934,9 +984,10 @@ Build a production-ready, full-stack intranet web application using FastAPI (Pyt
 | Phase 6: Testing & QA | 2 weeks | 9-10 |
 | Phase 7: UI/UX & Documentation | 1 week | 11 |
 | Phase 8: Deployment & DevOps | 2 weeks | 12-13 |
-| Phase 9: Advanced Features | 2 weeks | 14-15 |
-| Phase 10: Launch & Maintenance | 1+ week | 16+ |
-| **Total Initial Development** | **16 weeks** | **~4 months** |
+| Phase 9: BDD Documentation | 3 weeks | 14-17 |
+| Phase 10: Advanced Features | 2 weeks | 18-19 |
+| Phase 11: Launch & Maintenance | 1+ week | 20+ |
+| **Total Initial Development** | **19 weeks** | **~4.75 months** |
 
 ---
 
@@ -952,6 +1003,7 @@ Build a production-ready, full-stack intranet web application using FastAPI (Pyt
 
 ## References & Resources
 
+### External Resources
 - [FastAPI Documentation](https://fastapi.tiangolo.com/)
 - [FastAPI Full-Stack Template](https://github.com/fastapi/full-stack-fastapi-template)
 - [SQLModel Documentation](https://sqlmodel.tiangolo.com/)
@@ -960,21 +1012,31 @@ Build a production-ready, full-stack intranet web application using FastAPI (Pyt
 - [Azure GCC High Documentation](https://docs.microsoft.com/en-us/azure/azure-government/)
 - [LDAP3 Python Library](https://ldap3.readthedocs.io/)
 - [12-Factor App Methodology](https://12factor.net/)
+- [Cucumber BDD Documentation](https://cucumber.io/docs/bdd/)
+- [PyTest-BDD Documentation](https://pytest-bdd.readthedocs.io/)
+
+### Project Documentation
+- **BDD Documentation Plan**: `docs/ai/plan-002-bdd-documentation.md`
+- **API Guide**: `docs/API_GUIDE.md`
+- **User Guide**: `docs/USER_GUIDE.md`
+- **Admin Guide**: `docs/ADMIN_GUIDE.md`
+- **LDAP Configuration**: `docs/LDAP_CONFIGURATION.md`
+- **BDD Best Practices**: `docs/bdd/Best Practices for Writing Gherkin BDD Feature Files.pdf`
 
 ---
 
 ## Document Control
 
-- **Version**: 1.1
+- **Version**: 1.2
 - **Created**: 2025-10-30
-- **Last Updated**: 2025-10-31
+- **Last Updated**: 2025-11-01
 - **Status**: In Progress
 - **Owner**: Development Team
 - **Approvers**: Project Stakeholders
 
 ## Implementation Progress
 
-**Overall Progress**: 75% (7 of 10 phases complete, plus 1 partial)
+**Overall Progress**: 68% (7 of 11 phases complete, plus 1 partial)
 
 - ✅ Phase 1: Foundation & Project Setup (100%)
 - ✅ Phase 2: Authentication & Security (100%)
@@ -984,11 +1046,15 @@ Build a production-ready, full-stack intranet web application using FastAPI (Pyt
 - ✅ Phase 6: Testing & QA (100% - All 3 subsections complete)
 - ✅ Phase 7: UI/UX & Documentation (100% - All 3 subsections complete)
 - 🔄 Phase 8: Deployment & DevOps (25% - 1 of 4 subsections complete)
-- ⏳ Phase 9: Advanced Features (0%)
-- ⏳ Phase 10: Launch & Maintenance (0%)
+- ⏳ Phase 9: BDD Documentation (0% - Plan created)
+- ⏳ Phase 10: Advanced Features (0%)
+- ⏳ Phase 11: Launch & Maintenance (0%)
 
 **Current Sprint**: Phase 8 - Deployment & DevOps (next suggested phase)
 **Last Completed**: Phase 7.3 - User Documentation (2025-11-01)
+
+**Related Documentation**:
+- **BDD Documentation Plan**: `docs/ai/plan-002-bdd-documentation.md` - Comprehensive plan to document all features in Gherkin format (23 feature files, 150-250 scenarios, 12-16 days effort)
 
 ---
 
