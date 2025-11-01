@@ -12,8 +12,8 @@ engine = create_engine(
 
 
 def create_db_and_tables():
-    """Create database tables."""
-    SQLModel.metadata.create_all(engine)
+    """Create database tables (skips existing tables)."""
+    SQLModel.metadata.create_all(engine, checkfirst=True)
 
 
 def get_session():

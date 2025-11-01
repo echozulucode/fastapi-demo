@@ -1,7 +1,10 @@
 """User model and schemas."""
-from typing import Optional
+from typing import Optional, List, TYPE_CHECKING
 from datetime import datetime
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, SQLModel, Relationship
+
+if TYPE_CHECKING:
+    from app.models.token import PersonalAccessToken
 
 
 class UserBase(SQLModel):
@@ -14,10 +17,15 @@ class UserBase(SQLModel):
 
 class User(UserBase, table=True):
     """User database model."""
+    __tablename__ = "users"
+    
     id: Optional[int] = Field(default=None, primary_key=True)
     hashed_password: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: Optional[datetime] = None
+    
+    # Relationships
+    tokens: List["PersonalAccessToken"] = Relationship(back_populates="user")
 
 
 class UserCreate(UserBase):

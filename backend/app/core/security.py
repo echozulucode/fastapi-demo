@@ -3,8 +3,12 @@ from datetime import datetime, timedelta
 from typing import Optional, Union
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from sqlmodel import Session, select
 
 from app.core.config import settings
+from app.core.database import get_session as get_db_session
 
 # Password hashing context (using argon2 instead of bcrypt for Python 3.13 compatibility)
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
@@ -98,3 +102,65 @@ def validate_password_strength(password: str) -> tuple[bool, str]:
         return False, "Password must contain at least one number"
     
     return True, ""
+
+
+# PAT Authentication
+security_bearer = HTTPBearer(auto_error=False)
+
+
+def get_current_user_from_pat(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security_bearer),
+    session: Session = Depends(None),  # Will be injected
+):
+    """
+    Authenticate user via Personal Access Token.
+    
+    This is an alternative to JWT authentication for API access.
+    Returns user if valid PAT, otherwise returns None.
+    """
+    if not credentials:
+        return None
+    
+    token = credentials.credentials
+    
+    # Check if it's a PAT (starts with pat_)
+    if not token.startswith("pat_"):
+        return None
+    
+    # Import here to avoid circular dependency
+    from app.models.token import PersonalAccessToken
+    from app.models.user import User
+    from app.core.token_security import hash_token, is_token_expired
+    from app.core.database import get_session
+    
+    if session is None:
+        session = next(get_session())
+    
+    # Hash the token and look it up
+    token_hash = hash_token(token)
+    statement = select(PersonalAccessToken).where(
+        PersonalAccessToken.token_hash == token_hash
+    )
+    db_token = session.exec(statement).first()
+    
+    if not db_token:
+        return None
+    
+    # Check if token is active
+    if not db_token.is_active:
+        return None
+    
+    # Check if token is expired
+    if is_token_expired(db_token.expires_at):
+        return None
+    
+    # Update last used time
+    db_token.last_used_at = datetime.utcnow()
+    session.add(db_token)
+    session.commit()
+    
+    # Get the user
+    user_statement = select(User).where(User.id == db_token.user_id)
+    user = session.exec(user_statement).first()
+    
+    return user
