@@ -44,6 +44,12 @@ class Settings(BaseSettings):
     LDAP_BIND_DN: Optional[str] = None
     LDAP_BIND_PASSWORD: Optional[str] = None
     LDAP_SEARCH_BASE: Optional[str] = None
+    LDAP_USE_NTLM: bool = False  # Use NTLM authentication (for Windows AD)
+    LDAP_TIMEOUT: int = 10  # Connection timeout in seconds
+    LDAP_USER_SEARCH_FILTER: str = "(sAMAccountName={username})"
+    LDAP_GROUP_SEARCH_FILTER: str = "(member={user_dn})"
+    LDAP_ADMIN_GROUPS: str = ""  # Comma-separated list of admin groups
+    LDAP_ALLOWED_GROUPS: str = ""  # Comma-separated list of allowed groups (empty = all)
     
     # Email Configuration
     SMTP_ENABLED: bool = False

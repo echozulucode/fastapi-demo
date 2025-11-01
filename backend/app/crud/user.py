@@ -58,6 +58,7 @@ def create_user(session: Session, user_create: UserCreate) -> User:
         hashed_password=hashed_password,
         is_active=user_create.is_active,
         is_admin=user_create.is_admin,
+        is_ldap_user=getattr(user_create, 'is_ldap_user', False),
     )
     
     session.add(db_user)

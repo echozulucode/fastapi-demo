@@ -13,6 +13,7 @@ class UserBase(SQLModel):
     full_name: str = Field(max_length=255)
     is_active: bool = True
     is_admin: bool = False
+    is_ldap_user: bool = False
 
 
 class User(UserBase, table=True):
