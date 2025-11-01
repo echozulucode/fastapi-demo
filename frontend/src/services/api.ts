@@ -12,6 +12,7 @@ const api: AxiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // Enable sending cookies and credentials
 });
 
 // Request interceptor to add auth token
@@ -85,6 +86,7 @@ export const authAPI = {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
+        withCredentials: true,
       }
     );
     return response.data;
@@ -96,7 +98,8 @@ export const authAPI = {
   register: async (data: RegisterRequest): Promise<User> => {
     const response = await axios.post<User>(
       `${API_BASE_URL}/api/auth/register`,
-      data
+      data,
+      { withCredentials: true }
     );
     return response.data;
   },

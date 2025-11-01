@@ -4,6 +4,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import TopBar from '../components/TopBar';
 import './AuthPages.css';
 
 const RegisterPage: React.FC = () => {
@@ -65,7 +66,9 @@ const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="auth-container">
+    <>
+      <TopBar />
+      <div className="auth-container">
       <div className="auth-card">
         <h1>Create Account</h1>
         <p className="auth-subtitle">Register for a new account</p>
@@ -149,6 +152,7 @@ const RegisterPage: React.FC = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
