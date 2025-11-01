@@ -43,10 +43,68 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
-    description="A full-stack intranet application with FastAPI backend and React frontend",
+    description="""
+    ## FastAPI Intranet Demo Application
+    
+    A production-ready, full-stack intranet web application showcasing enterprise features.
+    
+    ### Features
+    
+    * **Authentication**: JWT-based authentication with username/password
+    * **User Management**: Complete user CRUD operations with role-based access control
+    * **Personal Access Tokens**: API token generation and management
+    * **Sample CRUD**: Items/Projects management demonstrating ownership-based access
+    * **Security**: Argon2 password hashing, RBAC, input validation
+    
+    ### Authentication
+    
+    Most endpoints require authentication. Use one of the following methods:
+    
+    1. **JWT Token** (OAuth2 Password Bearer): Login via `/api/auth/login` and use the access token
+    2. **Personal Access Token**: Create a token via `/api/users/me/tokens` and use as Bearer token
+    
+    ### Quick Start
+    
+    1. Login or register a new account
+    2. Use the **Authorize** button to authenticate
+    3. Explore the API endpoints below
+    
+    ### Support
+    
+    For issues or questions, please refer to the repository documentation.
+    """,
     docs_url="/docs",
     redoc_url="/redoc",
     lifespan=lifespan,
+    contact={
+        "name": "API Support",
+        "email": settings.FIRST_SUPERUSER_EMAIL,
+    },
+    license_info={
+        "name": "MIT",
+    },
+    openapi_tags=[
+        {
+            "name": "authentication",
+            "description": "User authentication and registration operations. Login, register, and logout endpoints.",
+        },
+        {
+            "name": "users",
+            "description": "User profile and account management. View and update user information.",
+        },
+        {
+            "name": "admin",
+            "description": "Administrative operations. **Admin access only**. User management and system configuration.",
+        },
+        {
+            "name": "tokens",
+            "description": "Personal Access Token (PAT) management. Create and manage API tokens for programmatic access.",
+        },
+        {
+            "name": "items",
+            "description": "Sample CRUD entity. Demonstrates ownership-based access control and pagination.",
+        },
+    ],
 )
 
 # Configure CORS
