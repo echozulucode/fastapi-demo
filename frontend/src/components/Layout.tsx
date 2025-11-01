@@ -46,6 +46,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             Profile
           </Link>
 
+          <Link to="/tokens" className={`nav-item ${isActive('/tokens')}`}>
+            <span className="nav-icon">🔑</span>
+            API Tokens
+          </Link>
+
           {user?.is_admin && (
             <>
               <div className="nav-divider">Admin</div>
