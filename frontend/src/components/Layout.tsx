@@ -51,6 +51,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             API Tokens
           </Link>
 
+          <Link to="/items" className={`nav-item ${isActive('/items')}`}>
+            <span className="nav-icon">📦</span>
+            Items
+          </Link>
+
           {user?.is_admin && (
             <>
               <div className="nav-divider">Admin</div>

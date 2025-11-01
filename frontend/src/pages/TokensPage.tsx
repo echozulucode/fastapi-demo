@@ -38,7 +38,7 @@ function TokensPage() {
 
   const fetchTokens = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('access_token');
       const response = await fetch('http://localhost:8000/api/users/me/tokens', {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -63,7 +63,7 @@ function TokensPage() {
     setError('');
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('access_token');
       const response = await fetch('http://localhost:8000/api/users/me/tokens', {
         method: 'POST',
         headers: {
@@ -100,7 +100,7 @@ function TokensPage() {
     }
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('access_token');
       const response = await fetch(`http://localhost:8000/api/users/me/tokens/${tokenId}`, {
         method: 'DELETE',
         headers: {
@@ -118,9 +118,26 @@ function TokensPage() {
     }
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    alert('Token copied to clipboard!');
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      alert('Token copied to clipboard!');
+    } catch (err) {
+      // Fallback for browsers that don't support clipboard API
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        alert('Token copied to clipboard!');
+      } catch (err) {
+        alert('Failed to copy token. Please copy it manually.');
+      }
+      document.body.removeChild(textArea);
+    }
   };
 
   const formatDate = (dateString: string | null) => {
