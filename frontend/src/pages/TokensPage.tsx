@@ -121,7 +121,6 @@ function TokensPage() {
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      alert('Token copied to clipboard!');
     } catch (err) {
       // Fallback for browsers that don't support clipboard API
       const textArea = document.createElement('textarea');
@@ -132,9 +131,8 @@ function TokensPage() {
       textArea.select();
       try {
         document.execCommand('copy');
-        alert('Token copied to clipboard!');
       } catch (err) {
-        alert('Failed to copy token. Please copy it manually.');
+        console.error('Failed to copy token:', err);
       }
       document.body.removeChild(textArea);
     }
