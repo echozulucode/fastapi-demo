@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Layout from '../components/Layout';
 import './TokensPage.css';
 
 interface Token {
@@ -164,14 +165,17 @@ function TokensPage() {
 
   if (loading) {
     return (
-      <div className="tokens-page">
-        <div className="loading">Loading tokens...</div>
-      </div>
+      <Layout>
+        <div className="tokens-page">
+          <div className="loading">Loading tokens...</div>
+        </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="tokens-page">
+    <Layout>
+      <div className="tokens-page">
       <div className="tokens-header">
         <h1>Personal Access Tokens</h1>
         <button className="btn-create" onClick={() => setShowCreateModal(true)}>
@@ -400,6 +404,7 @@ function TokensPage() {
         )}
       </div>
     </div>
+    </Layout>
   );
 }
 

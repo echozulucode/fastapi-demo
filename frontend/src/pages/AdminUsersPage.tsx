@@ -3,6 +3,7 @@
  */
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import Layout from '../components/Layout';
 import api from '../services/api';
 import { User } from '../services/api';
 import UserModal, { UserFormData } from '../components/UserModal';
@@ -110,15 +111,18 @@ const AdminUsersPage: React.FC = () => {
 
   if (!currentUser?.is_admin) {
     return (
-      <div className="access-denied">
-        <h1>Access Denied</h1>
-        <p>You don't have permission to access this page.</p>
-      </div>
+      <Layout>
+        <div className="access-denied">
+          <h1>Access Denied</h1>
+          <p>You don't have permission to access this page.</p>
+        </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="admin-users-page">
+    <Layout>
+      <div className="admin-users-page">
       <div className="page-header">
         <h1>User Management</h1>
         <p>Manage all users in the system</p>
@@ -256,6 +260,7 @@ const AdminUsersPage: React.FC = () => {
         mode={modalMode}
       />
     </div>
+    </Layout>
   );
 };
 

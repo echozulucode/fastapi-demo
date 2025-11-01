@@ -3,7 +3,7 @@
  * Displays logo, navigation, and user menu
  */
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import './TopBar.css';
 
@@ -12,6 +12,7 @@ const TopBar: React.FC = () => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -43,11 +44,31 @@ const TopBar: React.FC = () => {
         {/* Navigation Links (for authenticated users) */}
         {isAuthenticated && (
           <nav className="topbar-nav">
-            <Link to="/dashboard" className="topbar-link">Dashboard</Link>
-            <Link to="/items" className="topbar-link">Items</Link>
-            <Link to="/tokens" className="topbar-link">API Tokens</Link>
+            <Link 
+              to="/dashboard" 
+              className={`topbar-link ${location.pathname === '/dashboard' ? 'active' : ''}`}
+            >
+              Dashboard
+            </Link>
+            <Link 
+              to="/items" 
+              className={`topbar-link ${location.pathname === '/items' ? 'active' : ''}`}
+            >
+              Items
+            </Link>
+            <Link 
+              to="/tokens" 
+              className={`topbar-link ${location.pathname === '/tokens' ? 'active' : ''}`}
+            >
+              API Tokens
+            </Link>
             {user?.is_admin && (
-              <Link to="/admin/users" className="topbar-link">Users</Link>
+              <Link 
+                to="/admin/users" 
+                className={`topbar-link ${location.pathname === '/admin/users' ? 'active' : ''}`}
+              >
+                Users
+              </Link>
             )}
           </nav>
         )}

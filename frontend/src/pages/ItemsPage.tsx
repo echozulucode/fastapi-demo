@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Layout from '../components/Layout';
 import './ItemsPage.css';
 
 interface Item {
@@ -149,11 +150,16 @@ export default function ItemsPage() {
   };
 
   if (loading) {
-    return <div className="loading">Loading items...</div>;
+    return (
+      <Layout>
+        <div className="loading">Loading items...</div>
+      </Layout>
+    );
   }
 
   return (
-    <div className="items-page">
+    <Layout>
+      <div className="items-page">
       <div className="page-header">
         <h1>My Items</h1>
         <button className="btn-primary" onClick={handleCreate}>
@@ -281,5 +287,6 @@ export default function ItemsPage() {
         </div>
       )}
     </div>
+    </Layout>
   );
 }
