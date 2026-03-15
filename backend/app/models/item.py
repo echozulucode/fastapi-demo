@@ -1,31 +1,53 @@
+"""Item ORM model and Pydantic schemas."""
 from datetime import datetime
 from typing import Optional
-from sqlmodel import Field, SQLModel, Relationship
+
+from pydantic import BaseModel, ConfigDict
+from sqlalchemy import DateTime, ForeignKey, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column
+
+from app.models.base import Base
 
 
-class ItemBase(SQLModel):
-    title: str = Field(min_length=1, max_length=200)
-    description: Optional[str] = Field(default=None, max_length=2000)
-    status: str = Field(default="active", max_length=50)
+# ---------------------------------------------------------------------------
+# ORM model
+# ---------------------------------------------------------------------------
 
-
-class Item(ItemBase, table=True):
+class Item(Base):
+    """Item database table."""
     __tablename__ = "items"
-    
-    id: Optional[int] = Field(default=None, primary_key=True)
-    owner_id: int = Field(foreign_key="users.id")
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    title: Mapped[str] = mapped_column(String(200), nullable=False)
+    description: Mapped[Optional[str]] = mapped_column(String(2000), nullable=True)
+    status: Mapped[str] = mapped_column(String(50), default="active", nullable=False)
+    owner_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
+
+
+# ---------------------------------------------------------------------------
+# Pydantic schemas
+# ---------------------------------------------------------------------------
+
+class ItemBase(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    title: str
+    description: Optional[str] = None
+    status: str = "active"
 
 
 class ItemCreate(ItemBase):
     pass
 
 
-class ItemUpdate(SQLModel):
-    title: Optional[str] = Field(default=None, min_length=1, max_length=200)
-    description: Optional[str] = Field(default=None, max_length=2000)
-    status: Optional[str] = Field(default=None, max_length=50)
+class ItemUpdate(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    title: Optional[str] = None
+    description: Optional[str] = None
+    status: Optional[str] = None
 
 
 class ItemRead(ItemBase):

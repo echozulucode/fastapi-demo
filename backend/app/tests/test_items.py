@@ -3,7 +3,7 @@ Tests for Items CRUD endpoints.
 """
 import pytest
 from fastapi.testclient import TestClient
-from sqlmodel import Session
+from sqlalchemy.orm import Session
 
 from app.models.user import User
 from app.models.item import Item

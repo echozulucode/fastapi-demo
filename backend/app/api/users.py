@@ -1,7 +1,8 @@
 """User management API endpoints."""
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlmodel import Session, select
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 from app.core.database import get_session
 from app.core.deps import get_current_user, get_current_admin_user
@@ -111,7 +112,7 @@ async def list_users(
     Requires: Admin JWT token
     """
     statement = select(User).offset(skip).limit(limit)
-    users = session.exec(statement).all()
+    users = session.execute(statement).scalars().all()
     return users
 
 

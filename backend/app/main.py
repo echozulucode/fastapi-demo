@@ -13,30 +13,45 @@ from app.api import auth, users, tokens, items
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan events."""
-    # Startup: Create database tables
+    # Startup: create database tables
     create_db_and_tables()
-    
-    # Create initial admin user if it doesn't exist
-    from app.core.database import get_session
-    from app.crud import user as crud_user
-    from app.models.user import UserCreate
-    
-    session = next(get_session())
-    admin = crud_user.get_user_by_email(session, settings.FIRST_SUPERUSER_EMAIL)
-    if not admin:
-        admin_create = UserCreate(
-            email=settings.FIRST_SUPERUSER_EMAIL,
-            password=settings.FIRST_SUPERUSER_PASSWORD,
-            full_name="Admin User",
-            is_admin=True,
-            is_active=True
-        )
-        crud_user.create_user(session, admin_create)
-        print(f"✅ Created admin user: {settings.FIRST_SUPERUSER_EMAIL}")
-    
+
+    # Warm Keycloak JWKS cache (non-fatal: app still starts if Keycloak is not yet up)
+    if settings.AUTH_MODE == "keycloak":
+        from app.core.keycloak import keycloak_validator
+
+        ok = keycloak_validator.warm_cache()
+        if ok:
+            print(f"Keycloak JWKS loaded from {keycloak_validator.jwks_uri}")
+        else:
+            print(
+                "WARNING: Could not reach Keycloak at startup "
+                f"({keycloak_validator.jwks_uri}). "
+                "JWKS will be fetched on first authenticated request."
+            )
+
+    # Bootstrap initial admin user (local mode only)
+    if settings.AUTH_MODE == "local":
+        from app.core.database import get_session
+        from app.crud import user as crud_user
+        from app.models.user import UserCreate
+
+        session = next(get_session())
+        admin = crud_user.get_user_by_email(session, settings.FIRST_SUPERUSER_EMAIL)
+        if not admin:
+            admin_create = UserCreate(
+                email=settings.FIRST_SUPERUSER_EMAIL,
+                password=settings.FIRST_SUPERUSER_PASSWORD,
+                full_name="Admin User",
+                is_admin=True,
+                is_active=True,
+            )
+            crud_user.create_user(session, admin_create)
+            print(f"Created admin user: {settings.FIRST_SUPERUSER_EMAIL}")
+
     yield
-    
-    # Shutdown: cleanup if needed
+
+    # Shutdown: nothing to clean up currently
 
 
 # Create FastAPI app

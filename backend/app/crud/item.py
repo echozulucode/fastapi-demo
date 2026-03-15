@@ -1,13 +1,15 @@
-from typing import List, Optional
+"""CRUD operations for items."""
 from datetime import datetime
-from sqlmodel import Session, select
+from typing import List, Optional
+
+from sqlalchemy import func, select
+from sqlalchemy.orm import Session
+
 from app.models.item import Item, ItemCreate, ItemUpdate
 
 
 def create_item(session: Session, item: ItemCreate, owner_id: int) -> Item:
-    """Create a new item"""
-    item_dict = item.model_dump()
-    db_item = Item(**item_dict, owner_id=owner_id)
+    db_item = Item(**item.model_dump(), owner_id=owner_id)
     session.add(db_item)
     session.commit()
     session.refresh(db_item)
@@ -15,28 +17,31 @@ def create_item(session: Session, item: ItemCreate, owner_id: int) -> Item:
 
 
 def get_item(session: Session, item_id: int) -> Optional[Item]:
-    """Get an item by ID"""
     return session.get(Item, item_id)
 
 
 def get_items(
-    session: Session, 
+    session: Session,
     owner_id: Optional[int] = None,
-    skip: int = 0, 
-    limit: int = 100
+    skip: int = 0,
+    limit: int = 100,
 ) -> List[Item]:
-    """Get items with optional owner filtering and pagination"""
-    statement = select(Item)
+    stmt = select(Item)
     if owner_id is not None:
-        statement = statement.where(Item.owner_id == owner_id)
-    statement = statement.offset(skip).limit(limit).order_by(Item.created_at.desc())
-    return list(session.exec(statement).all())
+        stmt = stmt.where(Item.owner_id == owner_id)
+    stmt = stmt.order_by(Item.created_at.desc()).offset(skip).limit(limit)
+    return list(session.execute(stmt).scalars().all())
+
+
+def get_items_count(session: Session, owner_id: Optional[int] = None) -> int:
+    stmt = select(func.count()).select_from(Item)
+    if owner_id is not None:
+        stmt = stmt.where(Item.owner_id == owner_id)
+    return session.execute(stmt).scalar_one()
 
 
 def update_item(session: Session, db_item: Item, item_update: ItemUpdate) -> Item:
-    """Update an item"""
-    item_data = item_update.model_dump(exclude_unset=True)
-    for key, value in item_data.items():
+    for key, value in item_update.model_dump(exclude_unset=True).items():
         setattr(db_item, key, value)
     db_item.updated_at = datetime.utcnow()
     session.add(db_item)
@@ -46,14 +51,5 @@ def update_item(session: Session, db_item: Item, item_update: ItemUpdate) -> Ite
 
 
 def delete_item(session: Session, db_item: Item) -> None:
-    """Delete an item"""
     session.delete(db_item)
     session.commit()
-
-
-def get_items_count(session: Session, owner_id: Optional[int] = None) -> int:
-    """Get count of items with optional owner filtering"""
-    statement = select(Item)
-    if owner_id is not None:
-        statement = statement.where(Item.owner_id == owner_id)
-    return len(list(session.exec(statement).all()))

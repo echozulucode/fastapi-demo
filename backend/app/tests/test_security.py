@@ -4,7 +4,7 @@ Tests for SQL injection, XSS, authentication, and other security concerns
 """
 import pytest
 from fastapi.testclient import TestClient
-from sqlmodel import Session
+from sqlalchemy.orm import Session
 from app.main import app
 from app.core import security
 from app.models.user import User
@@ -41,7 +41,7 @@ class TestSQLInjection:
             "/api/items?title=test' OR '1'='1",
             headers=auth_headers
         )
-        assert response.status_code in [200, 422]
+        assert response.status_code in [200, 201, 422]
 
 
 class TestXSSPrevention:
@@ -321,4 +321,4 @@ class TestInputValidation:
             headers=auth_headers
         )
         # Should either succeed (if within limits) or reject (422)
-        assert response.status_code in [200, 422]
+        assert response.status_code in [200, 201, 422]

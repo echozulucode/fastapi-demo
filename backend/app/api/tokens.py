@@ -2,7 +2,8 @@
 from typing import List
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlmodel import Session, select
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 from ..core.database import get_session
 from ..core.deps import get_current_active_user
@@ -46,7 +47,7 @@ def create_personal_access_token(
         PersonalAccessToken.user_id == current_user.id,
         PersonalAccessToken.name == token_data.name,
     )
-    existing = session.exec(statement).first()
+    existing = session.execute(statement).scalars().first()
     if existing:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -97,7 +98,7 @@ def list_personal_access_tokens(
         PersonalAccessToken.user_id == current_user.id
     ).order_by(PersonalAccessToken.created_at.desc())
     
-    tokens = session.exec(statement).all()
+    tokens = session.execute(statement).scalars().all()
     
     return [
         TokenInfo(
@@ -128,7 +129,7 @@ def revoke_personal_access_token(
         PersonalAccessToken.id == token_id,
         PersonalAccessToken.user_id == current_user.id,
     )
-    token = session.exec(statement).first()
+    token = session.execute(statement).scalars().first()
     
     if not token:
         raise HTTPException(
@@ -157,7 +158,7 @@ def deactivate_personal_access_token(
         PersonalAccessToken.id == token_id,
         PersonalAccessToken.user_id == current_user.id,
     )
-    token = session.exec(statement).first()
+    token = session.execute(statement).scalars().first()
     
     if not token:
         raise HTTPException(

@@ -1,45 +1,64 @@
+"""Personal Access Token ORM model and Pydantic schemas."""
 from datetime import datetime
-from typing import Optional
-from sqlmodel import Field, SQLModel, Relationship
+from typing import TYPE_CHECKING, Optional
+
+from pydantic import BaseModel, ConfigDict
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from app.models.base import Base
+
+if TYPE_CHECKING:
+    from app.models.user import User
 
 
-class PersonalAccessToken(SQLModel, table=True):
-    """Personal Access Token model for API authentication"""
+# ---------------------------------------------------------------------------
+# ORM model
+# ---------------------------------------------------------------------------
+
+class PersonalAccessToken(Base):
+    """Personal Access Token database table."""
     __tablename__ = "personal_access_tokens"
-    
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(index=True, description="Human-readable name for the token")
-    token_hash: str = Field(index=True, unique=True, description="Hashed token value")
-    user_id: int = Field(foreign_key="users.id", index=True)
-    scopes: str = Field(default="read", description="Comma-separated list of scopes")
-    expires_at: Optional[datetime] = Field(default=None, description="Expiration datetime (None = never)")
-    last_used_at: Optional[datetime] = Field(default=None, description="Last time token was used")
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    is_active: bool = Field(default=True, description="Whether token is active")
-    
-    # Relationship
-    user: Optional["User"] = Relationship(back_populates="tokens")
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    name: Mapped[str] = mapped_column(String(100), index=True, nullable=False)
+    token_hash: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), index=True, nullable=False)
+    scopes: Mapped[str] = mapped_column(String(255), default="read", nullable=False)
+    expires_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    last_used_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+
+    user: Mapped[Optional["User"]] = relationship(back_populates="tokens")
 
 
-class TokenCreate(SQLModel):
-    """Schema for creating a new Personal Access Token"""
-    name: str = Field(min_length=3, max_length=100, description="Name for the token")
-    scopes: str = Field(default="read", description="Comma-separated scopes: read, write, admin")
-    expires_in_days: Optional[int] = Field(default=None, ge=1, le=365, description="Days until expiration (None = never)")
+# ---------------------------------------------------------------------------
+# Pydantic schemas
+# ---------------------------------------------------------------------------
+
+class TokenCreate(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    name: str
+    scopes: str = "read"
+    expires_in_days: Optional[int] = None
 
 
-class TokenResponse(SQLModel):
-    """Response when token is created (includes plaintext token)"""
+class TokenResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     name: str
-    token: str = Field(description="Plaintext token - save this, it won't be shown again!")
+    token: str
     scopes: str
     expires_at: Optional[datetime]
     created_at: datetime
 
 
-class TokenInfo(SQLModel):
-    """Information about an existing token (without plaintext value)"""
+class TokenInfo(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     name: str
     scopes: str

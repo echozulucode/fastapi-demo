@@ -209,7 +209,7 @@ class TestLDAPEndpoints:
     
     def test_ldap_health_check_disabled(self):
         """Test health check endpoint when LDAP is disabled."""
-        with patch('app.api.auth.ldap_service.health_check') as mock_health:
+        with patch('app.core.ldap_service.ldap_service.health_check') as mock_health:
             mock_health.return_value = {
                 'status': 'disabled',
                 'message': 'LDAP authentication is disabled',
@@ -223,7 +223,7 @@ class TestLDAPEndpoints:
     
     def test_ldap_health_check_unhealthy(self):
         """Test health check endpoint when LDAP is unhealthy."""
-        with patch('app.api.auth.ldap_service.health_check') as mock_health:
+        with patch('app.core.ldap_service.ldap_service.health_check') as mock_health:
             mock_health.return_value = {
                 'status': 'error',
                 'message': 'Connection failed',
@@ -252,7 +252,7 @@ class TestLDAPEndpoints:
         """Test that login falls back to local auth when LDAP fails."""
         mock_settings.LDAP_ENABLED = True
         
-        with patch('app.api.auth.ldap_service.authenticate') as mock_ldap_auth:
+        with patch('app.core.ldap_service.ldap_service.authenticate') as mock_ldap_auth:
             mock_ldap_auth.return_value = (False, None, "User not found")
             
             client = TestClient(app)
